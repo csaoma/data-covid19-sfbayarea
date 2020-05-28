@@ -1,6 +1,7 @@
 import json
 import requests
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from typing import Dict, List
 
 from selenium import webdriver
@@ -42,6 +43,8 @@ class SanMateoCounty:
 
         cases_dashboard_url = iframes[0]['src']
         cases_dashboard_charts = self.__get_charts_with_selenium(cases_dashboard_url)
+        self.assertions.charts_match(cases_dashboard_charts)
+
         self.output.update(CaseTotals(cases_dashboard_charts).extract_data())
         self.output['series'] = TimeSeries(cases_dashboard_charts).extract_data()
         return self.output
@@ -51,18 +54,14 @@ class SanMateoCounty:
         response.raise_for_status()
         return BeautifulSoup(response.text, 'html5lib')
 
-    def __get_charts_with_selenium(self, url) -> List[webdriver.firefox.webelement.FirefoxWebElement]:
+    def __get_charts_with_selenium(self, url) -> List[Tag]:
         driver = webdriver.Firefox()
         driver.get(url)
         WebDriverWait(driver, 30).until(
-            expected_conditions.text_to_be_present_in_element((By.CLASS_NAME, 'setFocusRing'), '0 to 19')
+            expected_conditions.text_to_be_present_in_element((By.CLASS_NAME, 'setFocusRing'), '90+')
         )
 
-        charts = driver.find_elements_by_class_name('svgScrollable')
-        if len(charts) != 8:
-            raise FutureWarning('This page has changed. There were previously eight bar charts.')
-
-        return charts
+        return BeautifulSoup(driver.page_source, 'html5lib').find_all('svg', { 'class': 'svgScrollable' })
 
 if __name__ == '__main__':
     """ When run as a script, prints the data to stdout"""

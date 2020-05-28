@@ -24,7 +24,7 @@ class TimeSeries:
         ]
 
     def __parse_labels(self, chart, data_type) -> List[Dict[str, int]]:
-        labels = chart.find_elements_by_css_selector(f'rect[aria-label~={data_type}][aria-label~=Cases]')
+        labels = chart.select(f'rect[aria-label~={data_type}][aria-label~=Cases]')
         return list(map(self.__parse_label, labels))
 
     def __parse_label(self, label) -> Dict[str, Any]:
@@ -33,7 +33,7 @@ class TimeSeries:
         Drop the last word because it's an empty string.
         Format: Date <Day of Week>, <Month> <Day>, <Year>. <New/Total> Cases by Day <Case Count>.
         """
-        label_words = re.split('\W+', label.get_attribute('aria-label'))[2:-1]
+        label_words = re.split('\W+', label['aria-label'])[2:-1]
         raw_date = ' '.join(label_words[:3])
         date = datetime.strptime(raw_date, '%B %d %Y').strftime('%Y-%m-%d')
         case_count = int(label_words[-1])

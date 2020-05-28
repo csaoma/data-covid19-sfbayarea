@@ -1,3 +1,4 @@
+import re
 class Assertions:
     """
     Class to encapsulate assertions.
@@ -11,11 +12,14 @@ class Assertions:
         if sum('https://app.powerbigov.us' in iframe['src'] for iframe in iframes) != 4:
             raise FutureWarning('iframes no longer recognized, check contents of page at START_URL.')
 
-    def age_labels_are_present(self, chart) -> None:
-        text = list(map(lambda title: title.get_attribute('innerHTML'), chart.find_elements_by_tag_name('title')))
-        expected_text = ['0 to 19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80-89', '90+']
-        if text != expected_text:
-            raise FutureWarning('Did not find the age range labels on one of the charts.')
+    def charts_match(self, charts) -> None:
+        if len(charts) != 8:
+            raise FutureWarning('This page has changed. There were previously eight bar charts.')
+
+
+    def regex_match(self, regex, match_string, message='String failed to match regular expression.') -> None:
+        if not re.match(regex, match_string):
+            raise FutureWarning(message)
 
     def dates_match(self, cumulative_cases, daily_cases) -> None:
         if [day['date'] for day in cumulative_cases] != [day['date'] for day in daily_cases]:
