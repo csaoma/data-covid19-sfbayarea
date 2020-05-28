@@ -11,7 +11,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from assertions import Assertions
 from case_totals import CaseTotals
-from charts import Charts
 from time_series import TimeSeries
 
 class SanMateoCounty:
@@ -54,7 +53,7 @@ class SanMateoCounty:
         response.raise_for_status()
         return BeautifulSoup(response.text, 'html5lib')
 
-    def __get_charts_with_selenium(self, url) -> List[Tag]:
+    def __get_charts_with_selenium(self, url: str) -> List[Tag]:
         driver = webdriver.Firefox()
         driver.get(url)
         WebDriverWait(driver, 30).until(

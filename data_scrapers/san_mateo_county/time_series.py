@@ -1,4 +1,5 @@
 import re
+from bs4.element import Tag
 from datetime import datetime
 from typing import Dict, List, Any
 
@@ -9,7 +10,7 @@ class TimeSeries:
     """
     Time series data parser. Receives Selenium dashboard charts and returns a list of the data.
     """
-    def __init__(self, charts) -> None:
+    def __init__(self, charts: List[Tag]) -> None:
         self.assertions = Assertions()
         self.charts = charts
 
@@ -23,11 +24,11 @@ class TimeSeries:
             for daily_case, cumulative_case in zip(daily_cases, cumulative_cases)
         ]
 
-    def __parse_labels(self, chart, data_type) -> List[Dict[str, int]]:
+    def __parse_labels(self, chart: Tag, data_type: str) -> List[Dict[str, int]]:
         labels = chart.select(f'rect[aria-label~={data_type}][aria-label~=Cases]')
         return list(map(self.__parse_label, labels))
 
-    def __parse_label(self, label) -> Dict[str, Any]:
+    def __parse_label(self, label: Tag) -> Dict[str, Any]:
         """
         Drop the first two words because it says Date then the day of the week.
         Drop the last word because it's an empty string.
