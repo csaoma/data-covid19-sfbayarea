@@ -2,6 +2,8 @@ import requests
 from typing import Dict, List
 from .feed import NewsFeed, NewsItem
 from .utils import decode_html_body
+import pandas as pd
+import datetime
 
 
 class NewsScraper:
@@ -41,11 +43,20 @@ class NewsScraper:
           'text': 'Expansion of coronavirus testing for all essential workers in SF',
           'date': '2020-04-23T04:11:56Z'}]
         """
+
+
         feed = self.create_feed()
         html = self.load_html(self.URL)
         news = self.parse_page(html, self.URL)
         feed.append(*news)
+        
+
+        date_before = str(datetime.date.today() - datetime.timedelta(days=14))
+        # feed = pd.DataFrame(feed)
+        feed = feed[feed[0]['date'] > date_before]
+
         return feed
+       
 
     def load_html(self, url: str) -> str:
         response = requests.get(self.URL)
@@ -59,3 +70,5 @@ class NewsScraper:
     def get_news(cls) -> NewsFeed:
         instance = cls()
         return instance.scrape()
+
+
