@@ -52,7 +52,7 @@ class NewsScraper:
         
 
         date_before = str(datetime.date.today() - datetime.timedelta(days=14))
-        # feed = pd.DataFrame(feed)
+        feed = pd.DataFrame(feed)
         feed = feed[feed[0]['date'] > date_before]
 
         return feed
